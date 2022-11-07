@@ -1,0 +1,360 @@
+<html>
+<head>
+    <title>PGHB Test Project</title>
+    <style>
+        /* do not change the css */
+        div {
+            display: block;
+            width: 200px;
+            height: 100px;
+            margin-bottom: 5px;
+        }
+    </style>
+    <script>
+        /*
+            Welcome to the test project. Please review this file before starting. If you have any questions feel free to reach out. This project has two sections, the first is Queues and the second is Basics. The Basics section covers some JavaScript fundamentals and has 5 parts and three bonuses. The Queues section covers working with the DOM, log statements, execution path, and the HTML lifecycle. Queues is more free form than Basics. Queues has 13 parts and 1 bonus. Save the bonuses until the end and only if you have extra time. You may use any syntax and APIs that work in the latest version of modern browsers. The project should take between 2 and 6 hours. Good luck!
+
+            ver 1.9
+
+            Instructions:
+
+            Queues:
+            1. ensure no console errors (including declaring the character encoding). run the code in at least two evergreen browsers
+            2. fix mobile viewport scaling
+            3. fix console log ordering, logs must be in a queue
+                zeroeth, first, second, third, fourth, fifth, sixth, seventh
+            4. ensure no duplicate console logs
+            5. keep the existing log statements in their current functions
+            6. a queue is a list of functions to be called
+                a. ensure a queue can be executed multiple times without running the functions in it multiple times, do not comment out any executes
+                b. ensure a queued function will not prevent the next queued function from running
+                c. if a function is added to a queue inside of another queue it must be kept there
+            7. set divs background-color to blue (but not do-not-show-me-div)
+                first-div, second-div, third-div, fourth-div, fifth-div
+            8. do not change the css or html directly, only through js
+            9. add queue4 (in the head) that asks a user to continue before running the other queues
+            10. add a console log to any queue in a body script that outputs eighth after seventh
+            11. declare the doctype
+            12. try to change the code as little as possible
+            13. follow the additional instructions in the functions declared after bodyInit and call them in queue4
+            bonus. add a second required argument to execute that will set a property on the queue so we can figure out which execute was run first for that queue. Update the executing log
+        */
+        function headInit() {
+            const queue = [];
+            const queue2 = [];
+            const queue3 = {};
+            const queues = {
+                queue: queue,
+                queue2: queue2,
+                queue3: queue3,
+            };
+            window.execute = function(queueName) {
+                const queue = queues[queueName];
+                console.log('executing', queueName);
+                queue.push = function(fn) {
+                    fn.call();
+                };
+                queue.forEach(function(fn) {
+                    fn.call();
+                });
+                queue.unshift = function() {
+                    console.warn('do not call unshift after execute');
+                };
+            };
+            queue.unshift(function() {
+                const a = 'q';
+                console.log('first', a);
+            });
+            queue.unshift(function() {
+                const a = 'q';
+                console.log('second', a);
+                queue2.unshift(function() {
+                    const b = a + 'q2';
+                    console.log('fourth', b);
+                });
+                // must come immediately after the above unshift
+                window.execute('queue2');
+                // you must use ids as is
+                const ids = ['first', 'second', 'third', 'fourth', 'fifth'];
+                ids.forEach(function(id) {
+                    document.getElementById(
+                        id + '-div'
+                    ).style['background-color'] = 'blue';
+                });
+                queue2.unshift(function() {
+                    const b = a + 'q2';
+                    console.log('fifth', b);
+                    // do not change or comment out the following line
+                    throw new Error('handle me');
+                });
+                queue2.push(function() {
+                    const b = a + 'q2';
+                    console.log('sixth', b);
+                    queue3.push(function () {
+                        const c = b + 'q3';
+                        console.log('seventh', c);
+                        // do not change or comment out the following line
+                        throw new Error('handle me');
+                    });
+                    window.execute('queue3');
+                });
+                window.execute('queue2');
+            });
+            queue2.unshift(function() {
+                const a = 'q2';
+                console.log('third', a);
+            });
+            window.execute('queue');
+        }
+        headInit(); // must be called in head, do not comment out
+    </script>
+</head>
+<body>
+    <!-- do not change divs -->
+    <div id="first-div"></div>
+    <div id="second-div"></div>
+    <div id="third-div"></div>
+    <div class="div" data-id="fourth-div"></div>
+    <div class="div" data-id="fifth-div"></div>
+    <div class="div" data-id="do-not-show-me-div"></div>
+    <script>
+        function bodyInit() {
+            const a = 'q';
+            console.log('zeroeth', a);
+        }
+        bodyInit(); // must be in body, do not comment out
+    </script>
+    <script>
+        function loops() {
+            // Basics
+            // 1. a. fix the following loops
+            // steps should be an array with integer elements from 0-20
+            // you cannot change the type of loop
+            const steps = [];
+            function _loops() {
+                for (; i < 3; ++i) {
+                    steps.push(i);
+                }
+                const arrIn = [4, 5, 6];
+                for (i in arrIn) {
+                    steps.push(i);
+                }
+                const arrOf = [7, 8, 9, 10, 11, 12];
+                for (i of arrOf.splice(3)) {
+                    steps.push(arrOf[i]);
+                }
+                [10, 11, 12, 13].forEach(function(index, element) {
+                    i = element;
+                    steps.push(element);
+                });
+                const arr = [14, 15, 16];
+                while (arr.length) {
+                    i = arr.pop();
+                    steps.push(i);
+                }
+                steps.push(17, 18, 19);
+                // bonus, comment out above line and fix the do while
+                // do {
+                //     steps.push(i);
+                // } while (i++ < 20); // must contain i++
+                var i = 20; // do not change
+                steps.push(i);
+            }
+            _loops();
+            console.log(steps);
+            // 1. b. fix the following code, you may change the loop
+            // the output should not contain any 'a' elements
+            const arrays = [
+                ['a', 'b', 'c', 'd', 'b', 'a'],
+                ['a', 'a', 'b', 'c', 'd', 'b', 'a', 'a', 'a'],
+            ];
+            arrays.forEach(function(array) {
+                array.forEach(function(item, i) {
+                    if (item === 'a') {
+                        array.splice(i, 1);
+                    }
+                });
+                console.log(array);
+            });
+            // 1. c. fix the following loop to output 0, 1, 2
+            // the setTimeout must be in the for loop
+            for (var counter = 0; counter < 3; ++counter) {
+                setTimeout(() => {
+                    console.log(counter);
+                }, 50);
+            }
+        }
+
+        function classes() {
+            /*
+                Basics
+                2. add functionality to the following class
+                    a. instantiate 3 Rectangle objects with sizes 300x250, 300x100, 320x50
+                    b. add each object's div to the body
+                    c. add a method to the Rectangle class that updates the background-color of the div
+                    d. Set the background colors to red
+                    e. add a method that changes the background-color of the div to a random color every 1s, call it
+                    f. when a rectangle is clicked disable the color changing
+                    g. add a argument to Rectangle that will add default text to the div and add a method to update this text, call it
+                    bonus. add a static method that takes two Rectangle arguments and returns the area of both added together, call it with the first two rectangles
+            */
+            function getRandomColor() {
+              var letters = '0123456789ABCDEF';
+              var color = '#';
+              for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+              }
+              return color;
+            }
+            class Rectangle {
+                constructor(w, h, bgc) {
+                    this.w = (w || 0);
+                    this.h = (h || 0);
+                    this.bgc = bgc || 'white';
+                    this.createDiv();
+                }
+
+                createDiv() {
+                    const div = document.createElement('div');
+                    div.style.width = this.w + 'px';
+                    div.style.height = this.h + 'px';
+                    div.style.backgroundColor = this.bgc;
+                    this.div = div;
+                }
+
+                getDiv() {
+                    return this.div;
+                }
+            }
+        }
+
+        function ifGuards() {
+            // Basics
+            // 3. invert the following if statements to reduce the indentation of this function (there should be the same number of if statements but with inverted conditions) aka reverse by truth tables
+            intA = 1;
+            intB = 2;
+            boolA = true;
+            boolB = false;
+            strA = 'asdf';
+            strB = '';
+            nanA = NaN;
+            intC = 3;
+            if (intA < intB) {
+                if (boolA || boolB) {
+                    if (strA !== strB) {
+                        if (isNaN(nanA) && !isNaN(intC)) {
+                            console.log('working');
+                        } else {
+                            console.log('4 not working');
+                        }
+                    } else {
+                        console.log('3 not working');
+                    }
+                } else {
+                    console.log('2 not working');
+                }
+            } else {
+                console.log('1 not working');
+            }
+        }
+
+        function sort() {
+            // Basics
+            // 4. sort the following arrays and output them to the console, you may use the builtin sort fn
+            const ints = [1, 10, 3, 4, 5, 20];
+            console.log(ints);
+
+            const dates = [
+                new Date('2020-02-02'),
+                new Date('2020-03-03'),
+                new Date('2020-01-01'),
+            ];
+            console.log(dates);
+
+            const strings = ['2020-02-02', '2020-03-03', '2020-01-01'];
+            console.log(strings);
+
+            // sort by key and val
+            const objects = [
+                {key: 2, val: 'b'},
+                {key: 3, val: 'e'},
+                {key: 3, val: 'd'},
+                {key: 3, val: 'c'},
+                {key: 1, val: 'a'},
+            ];
+            console.log(objects);
+        }
+
+        function refactor() {
+            // Basics
+            // 5. refactor the following
+            // 5. a.
+            let id = 'first-div';
+            function cmp(a, b) {
+                if (a > b) {
+                    document.getElementById(id).classList.add('a');
+                } else {
+                    document.getElementById(id).classList.add('b');
+                }
+            }
+            cmp(1, 2);
+            console.log(document.getElementById(id).classList);
+            cmp(2, 1);
+            console.log(document.getElementById(id).classList);
+            id = 'second-div';
+            cmp(1, 2);
+            console.log(document.getElementById(id).classList);
+            cmp(2, 1);
+            console.log(document.getElementById(id).classList);
+            // 5. b.
+            function getOwner(animalName) {
+              let owner;
+              switch (animalName) {
+                case 'Cat':
+                  owner = 'Johnny';
+                  break;
+                case 'Dog':
+                  owner = 'Carrie';
+                  break;
+                case 'Lizard':
+                  owner = 'Bobby';
+                  break;
+                case 'Parrot':
+                  owner = 'Susie';
+                  break;
+                default:
+                  owner = 'No one :(';
+              }
+              return owner;
+            }
+            console.log(getOwner('Cat'));
+            console.log(getOwner('Hamster'));
+        }
+
+        async function async() {
+            // bonus
+            let x = 1;
+            function task(input) { // do not change this fn
+                return new Promise(resolve => {
+                    window.setTimeout(() => {
+                        const output = input + ' completed';
+                        resolve(output);
+                    }, x++ * 250);
+                });
+            }
+            // 6. a. log the output of the following
+            task('task');
+            // 6. b. log the output of the following without using await
+            task('task2');
+            // 6. c. run the following in parallel and log the output
+            task('task3');
+            task('task4');
+            task('task5');
+            // 6. d. convert the following to async and log the output
+            function fn() {
+                return 3;
+            }
+        }
+    </script>
+</body>
+</html>
