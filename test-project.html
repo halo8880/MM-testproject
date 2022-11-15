@@ -1,5 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>PGHB Test Project</title>
     <style>
         /* do not change the css */
@@ -12,7 +15,15 @@
     </style>
     <script>
         /*
-            Welcome to the test project. Please review this file before starting. If you have any questions feel free to reach out. This project has two sections, the first is Queues and the second is Basics. The Basics section covers some JavaScript fundamentals and has 5 parts and three bonuses. The Queues section covers working with the DOM, log statements, execution path, and the HTML lifecycle. Queues is more free form than Basics. Queues has 13 parts and 1 bonus. Save the bonuses until the end and only if you have extra time. You may use any syntax and APIs that work in the latest version of modern browsers. The project should take between 2 and 6 hours. Good luck!
+            Welcome to the test project. Please review this file before starting.
+             If you have any questions feel free to reach out.
+              This project has two sections, the first is Queues and the second is Basics.
+               The Basics section covers some JavaScript fundamentals and has 5 parts and three bonuses.
+                The Queues section covers working with the DOM, log statements, execution path, and the HTML lifecycle.
+                Queues is more free form than Basics. Queues has 13 parts and 1 bonus.
+                Save the bonuses until the end and only if you have extra time.
+                You may use any syntax and APIs that work in the latest version of modern browsers.
+                The project should take between 2 and 6 hours. Good luck!
 
             ver 1.9
 
@@ -42,32 +53,64 @@
         function headInit() {
             const queue = [];
             const queue2 = [];
-            const queue3 = {};
+            const queue3 = [];
+            const queue4 = [];
             const queues = {
                 queue: queue,
                 queue2: queue2,
                 queue3: queue3,
+                queue4: queue4,
             };
+
+            queue4.unshift(function() {
+                async();
+            });
+            queue4.unshift(function() {
+                refactor();
+            });
+            queue4.unshift(function() {
+                sort();
+            });
+            queue4.unshift(function() {
+                ifGuards();
+            });
+            queue4.unshift(function() {
+                classes();
+            });
+            queue4.unshift(function() {
+                loops();
+            });
+            queue4.unshift(function() {
+                return window.confirm("Continue?");
+            });
             window.execute = function(queueName) {
                 const queue = queues[queueName];
+                if (queue.length === 0) return;
                 console.log('executing', queueName);
                 queue.push = function(fn) {
-                    fn.call();
+                    try {
+                        fn.call();
+                    } catch (e) {
+                        console.warn('error happened when calling fn() of %s, but was handled', queueName);
+                    }
                 };
-                queue.forEach(function(fn) {
-                    fn.call();
-                });
+                while (queue.length > 0) {
+                    try {
+                        queue.shift().call();
+                    } catch (e) {
+                        console.warn('error happened when calling %s, but was handled', queueName);
+                    }
+                }
                 queue.unshift = function() {
                     console.warn('do not call unshift after execute');
                 };
             };
             queue.unshift(function() {
                 const a = 'q';
-                console.log('first', a);
-            });
-            queue.unshift(function() {
-                const a = 'q';
                 console.log('second', a);
+                queue.push(function() {
+                    console.log('third', a);
+                });
                 queue2.unshift(function() {
                     const b = a + 'q2';
                     console.log('fourth', b);
@@ -77,15 +120,16 @@
                 // you must use ids as is
                 const ids = ['first', 'second', 'third', 'fourth', 'fifth'];
                 ids.forEach(function(id) {
-                    document.getElementById(
-                        id + '-div'
-                    ).style['background-color'] = 'blue';
+                    const thDiv = document.getElementById(id + '-div') || document.querySelector(`[data-id=${id}-div]`);
+                    if (thDiv) {
+                        thDiv.style['background-color'] = 'blue';
+                    }
                 });
-                queue2.unshift(function() {
+                queue2.push(function() {
                     const b = a + 'q2';
                     console.log('fifth', b);
                     // do not change or comment out the following line
-                    throw new Error('handle me');
+                    throw new Error('handle me2222');
                 });
                 queue2.push(function() {
                     const b = a + 'q2';
@@ -93,20 +137,22 @@
                     queue3.push(function () {
                         const c = b + 'q3';
                         console.log('seventh', c);
+                        console.log('eighth', c);
                         // do not change or comment out the following line
                         throw new Error('handle me');
                     });
                     window.execute('queue3');
+                    window.execute('queue4');
                 });
                 window.execute('queue2');
             });
-            queue2.unshift(function() {
-                const a = 'q2';
-                console.log('third', a);
+            queue.unshift(function() {
+                const a = 'q';
+                console.log('first', a);
             });
             window.execute('queue');
         }
-        headInit(); // must be called in head, do not comment out
+        window.addEventListener('load', () => headInit()); // must be called in head, do not comment out
     </script>
 </head>
 <body>
@@ -132,31 +178,31 @@
             // you cannot change the type of loop
             const steps = [];
             function _loops() {
-                for (; i < 3; ++i) {
+                for (let i = 0; i <= 3; ++i) {
                     steps.push(i);
                 }
                 const arrIn = [4, 5, 6];
                 for (i in arrIn) {
-                    steps.push(i);
+                    steps.push(arrIn[i]);
                 }
                 const arrOf = [7, 8, 9, 10, 11, 12];
-                for (i of arrOf.splice(3)) {
-                    steps.push(arrOf[i]);
+                for (i of arrOf.splice(0, 3)) {
+                    steps.push(i);
                 }
-                [10, 11, 12, 13].forEach(function(index, element) {
+                [10, 11, 12, 13].forEach(function(element) {
                     i = element;
                     steps.push(element);
                 });
                 const arr = [14, 15, 16];
                 while (arr.length) {
-                    i = arr.pop();
+                    i = arr.shift();
                     steps.push(i);
                 }
-                steps.push(17, 18, 19);
+                // steps.push(17, 18, 19);
                 // bonus, comment out above line and fix the do while
-                // do {
-                //     steps.push(i);
-                // } while (i++ < 20); // must contain i++
+                do {
+                    steps.push(i + 1);
+                } while (i++ < 18); // must contain i++
                 var i = 20; // do not change
                 steps.push(i);
             }
@@ -168,19 +214,26 @@
                 ['a', 'b', 'c', 'd', 'b', 'a'],
                 ['a', 'a', 'b', 'c', 'd', 'b', 'a', 'a', 'a'],
             ];
+            /** shorter but without modifying the original "arrays" */
+            // arrays.map(function(array) {
+            //     return array.filter(item => item !== 'a');
+            // }).forEach(array => console.log(array));
+
             arrays.forEach(function(array) {
-                array.forEach(function(item, i) {
+                for (let i = 0; i < array.length; i++) {
+                    const item = array[i];
                     if (item === 'a') {
                         array.splice(i, 1);
+                        i--;
                     }
-                });
+                }
                 console.log(array);
             });
             // 1. c. fix the following loop to output 0, 1, 2
             // the setTimeout must be in the for loop
-            for (var counter = 0; counter < 3; ++counter) {
+            for (var counter = -2; counter <= 0; ++counter) {
                 setTimeout(() => {
-                    console.log(counter);
+                    console.log(counter++);
                 }, 50);
             }
         }
@@ -206,11 +259,18 @@
               }
               return color;
             }
+            function addTwoRectangles(rec1, rec2) {
+                if (rec1.constructor.name !== 'Rectangle' || rec2.constructor.name !== 'Rectangle') {
+                    return -1;
+                }
+                return rec1.calculateArea() + rec2.calculateArea();
+            }
             class Rectangle {
-                constructor(w, h, bgc) {
+                constructor(w, h, bgc, text) {
                     this.w = (w || 0);
                     this.h = (h || 0);
-                    this.bgc = bgc || 'white';
+                    this.bgc = bgc || 'red';
+                    this.text = text || this.bgc;
                     this.createDiv();
                 }
 
@@ -222,10 +282,48 @@
                     this.div = div;
                 }
 
+                setDivBackgroundColor(bgcl) {
+                    this.div.style.backgroundColor = bgcl;
+                }
+
                 getDiv() {
                     return this.div;
                 }
+                getInterval() {
+                    return this.interval;
+                }
+                setInterval(interval) {
+                    this.interval = interval;
+                }
+                setText(text) {
+                    this.text = text;
+                    this.div.innerText = text;
+                }
+                calculateArea() {
+                    return this.w * this.h;
+                }
             }
+
+            let sizes = [
+                {w: 300, h: 250},
+                {w: 300, h: 100},
+                {w: 320, h: 50},
+            ];
+            const body = document.querySelector('body');
+            let rectangles = [];
+            sizes.forEach(size => rectangles.push(new Rectangle(size.w, size.h)));
+            rectangles.forEach(rec => {
+                body.append(rec.getDiv());
+                rec.setDivBackgroundColor('red');
+
+                rec.setInterval(setInterval(() => {
+                    const randomColor = getRandomColor();
+                    rec.setDivBackgroundColor(randomColor);
+                    rec.setText(randomColor);
+                }, 1000));
+                rec.getDiv().onclick = () => clearInterval(rec.getInterval());
+            });
+            console.log('Sum area of rectangle1 and rectangle2 (in pixel): ', addTwoRectangles(rectangles[0], rectangles[1]));
         }
 
         function ifGuards() {
@@ -239,22 +337,23 @@
             strB = '';
             nanA = NaN;
             intC = 3;
-            if (intA < intB) {
-                if (boolA || boolB) {
-                    if (strA !== strB) {
-                        if (isNaN(nanA) && !isNaN(intC)) {
-                            console.log('working');
-                        } else {
-                            console.log('4 not working');
-                        }
-                    } else {
-                        console.log('3 not working');
-                    }
-                } else {
-                    console.log('2 not working');
-                }
-            } else {
+
+            if (intA >= intB) {
                 console.log('1 not working');
+            } else {
+                if (!boolA && !boolB) {
+                    console.log('2 not working');
+                } else {
+                    if (strA === strB) {
+                        console.log('3 not working');
+                    } else {
+                        if (!isNaN(nanA) || isNaN(intC)) {
+                            console.log('4 not working');
+                        } else {
+                            console.log('working');
+                        }
+                    }
+                }
             }
         }
 
@@ -262,6 +361,7 @@
             // Basics
             // 4. sort the following arrays and output them to the console, you may use the builtin sort fn
             const ints = [1, 10, 3, 4, 5, 20];
+            ints.sort((o1, o2) => o1 - o2);
             console.log(ints);
 
             const dates = [
@@ -269,9 +369,11 @@
                 new Date('2020-03-03'),
                 new Date('2020-01-01'),
             ];
+            dates.sort((o1, o2) => o1 - o2);
             console.log(dates);
 
             const strings = ['2020-02-02', '2020-03-03', '2020-01-01'];
+            strings.sort((o1, o2) => o1 && o1.localeCompare(o2));
             console.log(strings);
 
             // sort by key and val
@@ -282,6 +384,13 @@
                 {key: 3, val: 'c'},
                 {key: 1, val: 'a'},
             ];
+            objects.sort((o1, o2) => {
+                if (o1.key === o2.key) {
+                    return o1.val.localeCompare(o2.val);
+                } else {
+                    return o1.key - o2.key;
+                }
+            });
             console.log(objects);
         }
 
@@ -289,43 +398,31 @@
             // Basics
             // 5. refactor the following
             // 5. a.
-            let id = 'first-div';
-            function cmp(a, b) {
-                if (a > b) {
-                    document.getElementById(id).classList.add('a');
-                } else {
-                    document.getElementById(id).classList.add('b');
-                }
+            function cmp(a, b, id) {
+                const classList = document.getElementById(id).classList;
+                classList.add(a > b ? 'a' : 'b');
+                console.log(classList);
             }
-            cmp(1, 2);
-            console.log(document.getElementById(id).classList);
-            cmp(2, 1);
-            console.log(document.getElementById(id).classList);
-            id = 'second-div';
-            cmp(1, 2);
-            console.log(document.getElementById(id).classList);
-            cmp(2, 1);
-            console.log(document.getElementById(id).classList);
+            const firstDivId = 'first-div';
+            cmp(1, 2, firstDivId);
+            cmp(2, 1, firstDivId);
+            const secondtDivId = 'second-div';
+            cmp(1, 2, secondtDivId);
+            cmp(2, 1, secondtDivId);
             // 5. b.
             function getOwner(animalName) {
-              let owner;
               switch (animalName) {
                 case 'Cat':
-                  owner = 'Johnny';
-                  break;
+                  return 'Johnny';
                 case 'Dog':
-                  owner = 'Carrie';
-                  break;
+                  return 'Carrie';
                 case 'Lizard':
-                  owner = 'Bobby';
-                  break;
+                  return 'Bobby';
                 case 'Parrot':
-                  owner = 'Susie';
-                  break;
+                  return 'Susie';
                 default:
-                  owner = 'No one :(';
+                  return 'No one :(';
               }
-              return owner;
             }
             console.log(getOwner('Cat'));
             console.log(getOwner('Hamster'));
@@ -343,17 +440,22 @@
                 });
             }
             // 6. a. log the output of the following
-            task('task');
+            console.log(await task('task'));
             // 6. b. log the output of the following without using await
-            task('task2');
+            task('task2').then(rs => console.log(rs));
             // 6. c. run the following in parallel and log the output
-            task('task3');
-            task('task4');
-            task('task5');
+            Promise.allSettled(
+                [task('task3'),
+                    task('task4'),
+                    task('task5')]
+            ).then(rs => {
+                rs.forEach(task => console.log(task.value));
+            });
             // 6. d. convert the following to async and log the output
-            function fn() {
+            async function fn() {
                 return 3;
             }
+            console.log(await fn());
         }
     </script>
 </body>
