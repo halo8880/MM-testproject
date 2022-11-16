@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <title>PGHB Test Project</title>
     <style>
         /* do not change the css */
@@ -63,24 +63,6 @@
             };
 
             queue4.unshift(function() {
-                async();
-            });
-            queue4.unshift(function() {
-                refactor();
-            });
-            queue4.unshift(function() {
-                sort();
-            });
-            queue4.unshift(function() {
-                ifGuards();
-            });
-            queue4.unshift(function() {
-                classes();
-            });
-            queue4.unshift(function() {
-                loops();
-            });
-            queue4.unshift(function() {
                 return window.confirm("Continue?");
             });
             window.execute = function(queueName) {
@@ -96,7 +78,7 @@
                 };
                 while (queue.length > 0) {
                     try {
-                        queue.shift().call();
+                        if (queue.shift().call() === false) break;
                     } catch (e) {
                         console.warn('error happened when calling %s, but was handled', queueName);
                     }
@@ -108,11 +90,11 @@
             queue.unshift(function() {
                 const a = 'q';
                 console.log('second', a);
-                queue.push(function() {
-                    console.log('third', a);
-                });
                 queue2.unshift(function() {
                     const b = a + 'q2';
+                    queue2.push(function() {
+                        console.log('third', b);
+                    });
                     console.log('fourth', b);
                 });
                 // must come immediately after the above unshift
@@ -137,12 +119,11 @@
                     queue3.push(function () {
                         const c = b + 'q3';
                         console.log('seventh', c);
-                        console.log('eighth', c);
                         // do not change or comment out the following line
                         throw new Error('handle me');
                     });
                     window.execute('queue3');
-                    window.execute('queue4');
+
                 });
                 window.execute('queue2');
             });
@@ -150,9 +131,34 @@
                 const a = 'q';
                 console.log('first', a);
             });
+            queue.unshift(function() {
+                const a = 'q';
+                console.log('zeroeth', a);
+            });
+
+            window.execute('queue4');
             window.execute('queue');
+            queue4.push(function() {
+                loops();
+            });
+            queue4.push(function() {
+                classes();
+            });
+            queue4.push(function() {
+                ifGuards();
+            });
+            queue4.push(function() {
+                sort();
+            });
+            queue4.push(function() {
+                refactor();
+            });
+            queue4.push(function() {
+                async();
+            });
+            window.queue = queue;
         }
-        window.addEventListener('load', () => headInit()); // must be called in head, do not comment out
+        window.addEventListener('DOMContentLoaded', () => headInit()); // must be called in head, do not comment out
     </script>
 </head>
 <body>
@@ -165,10 +171,12 @@
     <div class="div" data-id="do-not-show-me-div"></div>
     <script>
         function bodyInit() {
-            const a = 'q';
-            console.log('zeroeth', a);
+            window.queue.push(function() {
+                const a = 'q';
+                console.log('eighth', a);
+            })
         }
-        bodyInit(); // must be in body, do not comment out
+        window.addEventListener('DOMContentLoaded', () => bodyInit()); // must be in body, do not comment out
     </script>
     <script>
         function loops() {
@@ -338,22 +346,16 @@
             nanA = NaN;
             intC = 3;
 
-            if (intA >= intB) {
+            if (intA < intB && (boolA || boolB) && strA !== strB && isNaN(nanA) && !isNaN(intC)) {
+                console.log('working');
+            } else if (intA >= intB) {
                 console.log('1 not working');
-            } else {
-                if (!boolA && !boolB) {
-                    console.log('2 not working');
-                } else {
-                    if (strA === strB) {
-                        console.log('3 not working');
-                    } else {
-                        if (!isNaN(nanA) || isNaN(intC)) {
-                            console.log('4 not working');
-                        } else {
-                            console.log('working');
-                        }
-                    }
-                }
+            } else if (!boolA && !boolB) {
+                console.log('2 not working');
+            } else if (strA === strB) {
+                console.log('3 not working');
+            } else if (!isNaN(nanA) || isNaN(intC)) {
+                console.log('4 not working');
             }
         }
 
@@ -410,19 +412,14 @@
             cmp(1, 2, secondtDivId);
             cmp(2, 1, secondtDivId);
             // 5. b.
+            const animalInfo = {
+                Cat: 'Johnny',
+                Dog: 'Carrie',
+                Lizard: 'Bobby',
+                Parrot: 'Susie',
+            }
             function getOwner(animalName) {
-              switch (animalName) {
-                case 'Cat':
-                  return 'Johnny';
-                case 'Dog':
-                  return 'Carrie';
-                case 'Lizard':
-                  return 'Bobby';
-                case 'Parrot':
-                  return 'Susie';
-                default:
-                  return 'No one :(';
-              }
+                return animalInfo[animalName] || 'No one :(';
             }
             console.log(getOwner('Cat'));
             console.log(getOwner('Hamster'));
